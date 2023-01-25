@@ -1,0 +1,87 @@
+[objek]=xlsread('ica_[objek]','Sheet1','A2:P84785');
+ 
+ 
+FP1=[objek] (:,2);
+F3=[objek] (:,3);
+F7=[objek](:,4);
+T3=[objek](:,5);
+T5=[objek](:,6);
+O1=[objek](:,7);
+C4=[objek](:,8);
+FP2=[objek](:,9);
+FZ=[objek](:,10);
+F4=[objek](:,11);
+F8=[objek](:,12);
+C3=[objek](:,13);
+CZ=[objek](:,14);
+PZ=[objek](:,15);
+OZ=[objek](:,16);
+ 
+t=1:1:84784;
+ 
+ 
+plot(t,FP1,'r');
+hold on
+ 
+plot(t,F3,'y');
+hold on
+ 
+plot(t,F7,'m');
+hold on
+ 
+plot(t,T3,'c');
+hold on
+ 
+plot(t,T5,'g');
+hold on
+ 
+plot(t,O1,'b');
+hold on
+ 
+plot(t,C4,'w');
+hold on
+ 
+plot(t,FP2,'k');
+hold on
+ 
+plot(t,FZ,'y');
+hold on
+ 
+plot(t,F4,'m');
+hold on
+ 
+plot(t,F8,'c');
+hold on
+ 
+plot(t,C3,'g');
+hold on
+ 
+plot(t,CZ,'b');
+hold on
+ 
+plot(t,C4,'w');
+hold on
+ 
+plot(t,PZ,'k');
+hold off
+ 
+xlabel('Time(s)');
+ylabel('Frequency(Hz)');
+title('[OBJEK]');
+grid on
+ 
+FP1dwtI=FP1dwt'
+F3dwtI=F3dwt'
+F7dwtI=F7dwt'
+T3dwtI=T3dwt'
+T5dwtI=T5dwt'
+O1dwtI=O1dwt'
+C4dwtI=C4dwt'
+FP2dwtI=FP2dwt'
+FZdwtI=FZdwt'
+F4dwtI=F4dwt'
+F8dwtI=F8dwt'
+C3dwtI=C3dwt'
+CZdwtI=CZdwt'
+PZdwtI=PZdwt'
+OZdwtI=OZdwt'
