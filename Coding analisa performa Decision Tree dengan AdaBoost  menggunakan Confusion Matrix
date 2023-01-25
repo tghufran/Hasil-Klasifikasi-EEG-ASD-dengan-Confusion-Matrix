@@ -1,0 +1,145 @@
+from sklearn import tree
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report, confusion_matrix, make_scorer,accuracy_score
+from sklearn.ensemble import AdaBoostClassifier
+import seaborn as sns
+from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import os
+
+DATA_ROOT = 'dataset3/'
+CD3_PATH = os.path.join(DATA_ROOT, "CD3.csv")
+CD4_PATH = os.path.join(DATA_ROOT, "CD4.csv")
+CD7_PATH = os.path.join(DATA_ROOT, "CD7.csv")
+STATCD3_PATH = os.path.join(DATA_ROOT, "STATISTIK_CD3.csv")
+STATCD4_PATH = os.path.join(DATA_ROOT, 'STATISTIK_CD4.csv')
+STATCD7_PATH = os.path.join(DATA_ROOT, 'STATISTIK_CD7.csv')
+
+def dataset(path_dataset, stat=False):
+
+    scaler = StandardScaler()
+    name_features = []
+
+    if stat == False:
+        df = pd.read_csv(path_dataset)
+        df = df.drop(['NAMA'], axis=1)
+
+        for feature in df.columns:
+            name_features.append(feature)
+
+        X = df.iloc[:, :-2]
+        X = scaler.fit_transform(X)
+        y = df.iloc[:, -1]
+
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    else:
+        df = pd.read_csv(path_dataset)
+        X = df.iloc[:, :-2]
+        X = scaler.fit_transform(X)
+        y = df.iloc[:, -1]
+
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+    return (X, y, X_train, X_test, y_train, y_test, name_features)
+
+def dt_Adaboost(dataset, result_best_estimator, pruning):
+    criterion, max_depth = result_best_estimator
+    (_, _, X_train, X_test, y_train, y_test, name_features) = dataset
+
+    if pruning == True:
+        dt = DecisionTreeClassifier(criterion=criterion, max_depth=max_depth, random_state=42)
+
+    else:
+        dt = DecisionTreeClassifier(random_state=42, criterion='gini')
+
+    Adaboost = AdaBoostClassifier(
+        base_estimator=dt,
+        n_estimators=100)
+
+    Adaboost.fit(X_train, y_train)
+
+    y_pred_test = Adaboost.predict(X_test)
+    y_pred_train = Adaboost.predict(X_train)
+
+    report_test = classification_report(y_test, y_pred_test)
+    report_train = classification_report(y_pred_train, y_train)
+
+    mat = confusion_matrix(y_test, y_pred_test)
+    sns.heatmap(mat.T, square=True, annot=True, fmt='d')
+    plt.title("Confusion Matrix Test Model")
+    plt.xlabel("Predict Class")
+    plt.ylabel("True Class")
+
+    return report_train, report_test
+
+def print_report(report, pruning=False):
+    print("===============TRAINING RESULT=======================")
+    print()
+    print(report[0])
+    print("=====================================================")
+    print()
+    print()
+    print('===============TESTING RESULT========================')
+    print()
+    print(report[1])
+    print("=====================================================")
+
+    if(pruning == True):
+        print("+++++++++++++++PRUNING MODEL RESULT++++++++++++++++")
+        print()
+        print("==================TRAINING RESULT==================")
+        print()
+        print(report[0])
+        print("===================================================")
+        print()
+        print()
+        print('=================TESTING RESULT====================')
+        print()
+        print(report[1])
+        print("===================================================")
+
+#CD3
+df = dataset(CD3_PATH, stat=False)
+best_estimator = find_optim_parm(df)
+report = dt_Adaboost(df, best_estimator, pruning=True)
+print_report(report)
+
+ 
+#CD4
+df = dataset(CD4_PATH, stat=False)
+best_estimator = find_optim_parm(df)
+report = dt_Adaboost(df, best_estimator, pruning=True)
+print_report(report)
+ 
+
+#CD7
+df = dataset(CD7_PATH, stat=False)
+best_estimator = find_optim_parm(df)
+report = dt_Adaboost(df, best_estimator, pruning=True)
+print_report(report)
+ 
+#STAT CD3
+df = dataset(STATCD3_PATH, stat=True)
+best_estimator = find_optim_parm(df)
+report = dt_Adaboost(df, best_estimator, pruning=False)
+print_report(report)
+ 
+#STAT CD4
+df = dataset(STATCD4_PATH, stat=True)
+best_estimator = find_optim_parm(df)
+report = dt_Adaboost(df, best_estimator, pruning=True)
+print_report(report)
+ 
+
+
+
+#STAT CD7
+df = dataset(STATCD7_PATH, stat=True)
+best_estimator = find_optim_parm(df)
+report = dt_Adaboost(df, best_estimator, pruning=True)
+print_report(report)
+ 
